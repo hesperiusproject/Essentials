@@ -4,7 +4,9 @@ import net.ess3.api.IEssentials;
 import net.ess3.api.IUser;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.Bukkit;
 
+import it.hesperius.ess.CancelTpEvent;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -153,6 +155,10 @@ public class AsyncTimedTeleport implements Runnable {
             ess.getServer().getScheduler().cancelTask(timer_task);
             if (notifyUser) {
                 teleportOwner.sendMessage(tl("pendingTeleportCancelled"));
+
+                //Bukkit.getScheduler().runTask(Essentials.getInstance(),() -> Bukkit.getPluginManager().callEvent(new CancelTpEvent(teleportOwner.getBase())));
+                ess.scheduleSyncDelayedTask(() -> Bukkit.getPluginManager().callEvent(new CancelTpEvent(teleportOwner.getBase())),0l);
+
                 if (timer_teleportee != null && !timer_teleportee.equals(teleportOwner.getBase().getUniqueId())) {
                     ess.getUser(timer_teleportee).sendMessage(tl("pendingTeleportCancelled"));
                 }
