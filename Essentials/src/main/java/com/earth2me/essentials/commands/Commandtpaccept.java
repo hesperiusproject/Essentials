@@ -7,6 +7,8 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import com.earth2me.essentials.commands.Commandtpa;
+
 import java.util.concurrent.CompletableFuture;
 
 import static com.earth2me.essentials.I18n.tl;
@@ -47,8 +49,13 @@ public class Commandtpaccept extends EssentialsCommand {
         }
 
         final Trade charge = new Trade(this.getName(), ess);
-        user.sendMessage(tl("requestAccepted"));
-        requester.sendMessage(tl("requestAcceptedFrom", user.getDisplayName()));
+
+        if(Commandtpa.USER_LIST.contains(requester)){
+            Commandtpa.USER_LIST.remove(requester);
+        }else {
+            user.sendMessage(tl("requestAccepted"));
+            requester.sendMessage(tl("requestAcceptedFrom", user.getDisplayName()));
+        }
 
         final CompletableFuture<Boolean> future = getNewExceptionFuture(requester.getSource(), commandLabel);
         future.exceptionally(e -> {

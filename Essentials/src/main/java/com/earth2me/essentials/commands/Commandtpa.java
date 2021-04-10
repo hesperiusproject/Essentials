@@ -10,10 +10,14 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.HashSet;
 
 import static com.earth2me.essentials.I18n.tl;
 
 public class Commandtpa extends EssentialsCommand {
+
+    public static HashSet<com.earth2me.essentials.User> USER_LIST = new HashSet<com.earth2me.essentials.User>();
+
     public Commandtpa() {
         super("tpa");
     }
@@ -61,19 +65,23 @@ public class Commandtpa extends EssentialsCommand {
             final TPARequestEvent tpaEvent = new TPARequestEvent(user.getSource(), player, false);
             ess.getServer().getPluginManager().callEvent(tpaEvent);
             if (tpaEvent.isCancelled()) {
-                throw new Exception(tl("teleportRequestCancelled", player.getDisplayName()));
+                USER_LIST.add(user);
+                player.requestTeleport(user, false);
+                return;
+                //throw new Exception(tl("teleportRequestCancelled", player.getDisplayName()));
             }
             player.requestTeleport(user, false);
             player.sendMessage(tl("teleportRequest", user.getDisplayName()));
             player.sendMessage(tl("typeTpaccept"));
             player.sendMessage(tl("typeTpdeny"));
+
             if (ess.getSettings().getTpaAcceptCancellation() != 0) {
                 player.sendMessage(tl("teleportRequestTimeoutInfo", ess.getSettings().getTpaAcceptCancellation()));
             }
         }
         user.sendMessage(tl("requestSent", player.getDisplayName()));
         if (user.isAuthorized("essentials.tpacancel")) {
-            user.sendMessage(tl("typeTpacancel"));
+                user.sendMessage(tl("typeTpacancel"));
         }
     }
 
